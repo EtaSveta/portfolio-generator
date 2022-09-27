@@ -1,9 +1,53 @@
-const { truncate } = require('fs');
+
+const fs = require('fs');
 const inquirer = require('inquirer');
+const generatePage = require('./src/page-template.js');
 
-// const fs = require('fs');
-
-// const generatePage = require('./src/page-template.js');
+// const mockData = {
+//   name: 'Svetlana',
+//   github: 'etaSveta',
+//   confirmAbout: true,
+//   about:
+//     'Duis consectetur nunc nunc. Morbi finibus non sapien nec pharetra. Fusce nec dignissim orci, ac interdum ipsum. Morbi mattis justo sed commodo pellentesque. Nulla eget fringilla nulla. Integer gravida magna mi, id efficitur metus tempus et.',
+//   projects: [
+//     {
+//       name: 'Run Buddy',
+//       description:
+//         'Duis consectetur nunc nunc. Morbi finibus non sapien nec pharetra. Fusce nec dignissim orci, ac interdum ipsum. Morbi mattis justo sed commodo pellentesque. Nulla eget fringilla nulla. Integer gravida magna mi, id efficitur metus tempus et. Nam fringilla elit dapibus pellentesque cursus.',
+//       languages: ['HTML', 'CSS'],
+//       link: 'https://github.com/etaSveta/run-buddy',
+//       feature: true,
+//       confirmAddProject: true
+//     },
+//     {
+//       name: 'Taskinator',
+//       description:
+//         'Duis consectetur nunc nunc. Morbi finibus non sapien nec pharetra. Fusce nec dignissim orci, ac interdum ipsum. Morbi mattis justo sed commodo pellentesque. Nulla eget fringilla nulla. Integer gravida magna mi, id efficitur metus tempus et. Nam fringilla elit dapibus pellentesque cursus.',
+//       languages: ['JavaScript', 'HTML', 'CSS'],
+//       link: 'https://github.com/etaSveta/taskinator',
+//       feature: true,
+//       confirmAddProject: true
+//     },
+//     {
+//       name: 'Taskmaster Pro',
+//       description:
+//         'Duis consectetur nunc nunc. Morbi finibus non sapien nec pharetra. Fusce nec dignissim orci, ac interdum ipsum. Morbi mattis justo sed commodo pellentesque. Nulla eget fringilla nulla. Integer gravida magna mi, id efficitur metus tempus et. Nam fringilla elit dapibus pellentesque cursus.',
+//       languages: ['JavaScript', 'jQuery', 'CSS', 'HTML', 'Bootstrap'],
+//       link: 'https://github.com/etaSveta/taskmaster-pro',
+//       feature: false,
+//       confirmAddProject: true
+//     },
+//     {
+//       name: 'Robot Gladiators',
+//       description:
+//         'Duis consectetur nunc nunc. Morbi finibus non sapien nec pharetra. Fusce nec dignissim orci, ac interdum ipsum. Morbi mattis justo sed commodo pellentesque.',
+//       languages: ['JavaScript'],
+//       link: 'https://github.com/etaSveta/robot-gladiators',
+//       feature: false,
+//       confirmAddProject: false
+//     }
+//   ]
+// };
 
 // const pageHTML = generatePage(nameUser, github);
 
@@ -14,7 +58,7 @@ const inquirer = require('inquirer');
 // });
 
 const promptUser = () => {
-return inquirer.prompt ([
+return inquirer.prompt([
     {
       type: 'input',
       name: 'name',
@@ -24,7 +68,7 @@ return inquirer.prompt ([
           return true;
         } else {
           console.log('Please enter your name!')
-          return false
+          return false;
         }
       }
     },
@@ -49,15 +93,9 @@ return inquirer.prompt ([
     },
     {
       type: 'input',
-      name: 'About',
+      name: 'about',
       message: 'Provide some info about yourself: ',
-      when: ({ confirmAbout }) => {
-        if (confirmAbout) {
-          return true;
-        } else {
-          return false;
-        }
-      }
+      when: ({ confirmAbout }) => confirmAbout
     }
   ]);
 };
@@ -142,8 +180,22 @@ const promptProject = portfolioData => {
       return portfolioData;
     }
   });
-}
+};
 
 promptUser()
 .then(promptProject)
-.then(portfolioData => console.log(portfolioData))
+.then(portfolioData => {
+  const pageHTML = generatePage(portfolioData);
+
+  fs.writeFile('./index.html', pageHTML, err => {
+     if (err) throw new Error(err);
+    
+     console.log('Portfolio Complete! Check out index.html to see the output');
+   });
+  });
+  
+
+  
+  
+  
+  
